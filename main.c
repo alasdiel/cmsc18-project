@@ -12,26 +12,9 @@ read later in a summary of the last 15 (tentative) transactions.
 */
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 #define minimum_fare 10
-
-// //initialization of key value pairs
-
-// char location[10][30] = {"Holy Spirit Community Hospital",
-//                         "Admin",
-//                         "EBL",
-//                         "Kalimudan",
-//                         "Library",
-//                         "CSM",
-//                         "Sports Complex",
-//                         "One Big Wash",
-//                         "UPad",
-//                         "Rehab Center",
-//                         "Bago Oshiro",
-//                         "Bureau of Plant Industries"};
-// int value[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-// //end of initialization
 
 /*
 Given our matrix:                            Passengers:
@@ -66,10 +49,54 @@ typedef struct{
     int discounts[2];
 } Route;
 
-
 void delay (int seconds){ 
     clock_t start_time = clock();
     while (clock() < start_time + seconds * CLOCKS_PER_SEC);
+}
+
+const char* normalize_location_name(const char* location){
+    char loc[50];
+    strcpy(loc, location);
+    for (int i = 0; loc[i]; i++){
+        loc[i] = tolower(loc[i]);
+    }
+    if (strcmp(loc, "admin") == 0 ||
+        strcmp(loc, "administration building") == 0 ||
+        strcmp(loc, "chss") == 0 ||
+        strcmp(loc, "ebl") == 0 ||
+        strcmp(loc, "ebl dorm") == 0 ||
+        strcmp(loc, "kalimudan") == 0 ||
+        strcmp(loc, "kali") == 0 ||
+        strcmp(loc, "library") == 0 ||
+        strcmp(loc, "lib") == 0){
+            return "Admin/EBL/Kalimudan/Library";
+    }
+    else if (strcmp(loc, "csm") == 0 || strcmp(loc, "college of science and mathematics") == 0){
+        return "CSM";
+    }
+    else if (strcmp(loc, "sports complex") == 0 ||
+             strcmp(loc, "sports com") == 0 ||
+             strcmp(loc, "sports") == 0){
+        return "Sports Complex";
+        }
+    else if (strcmp(loc, "holy spirit community hospital") == 0 ||
+             strcmp(loc, "holy spirit") == 0){
+        return "Holy Spirit Community Hospital";
+    }
+    else if (strcmp(loc, "one big wash") == 0 ||
+             strcmp(loc, "upad") == 0 ||
+             strcmp(loc, "rehab center") == 0||
+             strcmp(loc, "rehabilitation center") == 0){
+        return "One Big Wash/UPad/Rehab Center";
+    }
+    else if (strcmp(loc, "bago oshiro") == 0 ||
+             strcmp(loc, "bureau of plant industries") == 0) {
+        return "Bago Oshiro/Bureau of Plant Industries";
+    }
+
+    return location;
+
+int calculate_fare(Route fares[], int fare_count, const char* origin, const char* destination, int passengers){
 }
 
 
