@@ -86,7 +86,9 @@ possible input cases to a single format
 const char* normalize_location_name(const char* location){
     char loc[50];
     strcpy(loc, location);
-    for (int i = 0; loc[i]; i++){
+    int i;
+
+    for (i = 0; loc[i]; i++){
         loc[i] = tolower(loc[i]);
     }
     if (strcmp(loc, "admin") == 0 ||
@@ -130,8 +132,8 @@ const char* normalize_location_name(const char* location){
 int calculate_fare(Route fares[], int fare_count, const char* start, const char* end, int passengers){
     const char* normalized_start = normalize_location_name(start);
     const char* normalized_end = normalize_location_name(end);
-
-    for (int i = 0; i < fare_count; i++){
+    int i,j;
+    for (i = 0; i < fare_count; i++){
         const char* route_start = normalize_location_name(fares[i].starting_point);
         const char* route_end = normalize_location_name(fares[i].end_point);
 
@@ -139,7 +141,7 @@ int calculate_fare(Route fares[], int fare_count, const char* start, const char*
             || strcmp(normalized_start, route_end) == 0 && strcmp(normalized_end, route_start) == 0){
             int fare = fares[i].base_fare;
 
-            for (int j = 0; j < passengers - 1 && j < 2; j++){
+            for (j = 0; j < passengers - 1 && j < 2; j++){
                 fare -= fares[i].discounts[j];
             }
 
