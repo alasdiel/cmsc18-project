@@ -74,6 +74,8 @@ Route fares[] = { // formatted as: {starting_point, end_point, base_fare, {disco
     {"Bago Oshiro/Bureau of Plant Industries", "Sports Complex", 35, {10, 5}}
 };
 
+int fare_count = sizeof(fares) / sizeof(fares[0]);
+
 void delay (int seconds){ 
     clock_t start_time = clock();
     while (clock() < start_time + seconds * CLOCKS_PER_SEC);
@@ -152,33 +154,126 @@ int calculate_fare(Route fares[], int fare_count, const char* start, const char*
             return fare;
         }
     }
-    printf("Route not found\n");
     return -1;
 }
 
+int save_choice = 0;
+int savePrompt(){
+    do{
+    printf("Would you like to enable saving?\n[1] Yes\n[2] No\nInput: ");
+    scanf("%d", &save_choice);
+    printf("\n");
+    } while (save_choice != 1 && save_choice != 2);
 
-void savetofile(){
-
+    return save_choice-1;
 }
 
-int main() {
-    int fare_count = sizeof(fares) / sizeof(fares[0]);
 
-    printf("Welcome to the UP Mindanao Tricycle Fare Calculator!\n");
-    printf("Please input the starting point: ");
+void append_to_history(const char* start, const char* end, int passengers, int fare){
+    if (save_choice == 0){
+        return;
+    }
+    else {
+
+        FILE *file = fopen("history.txt", "a+");
+        if (file == NULL){
+            printf("Error opening file!\n");
+            return;
+        }
+
+        fseek(file,0,SEEK_END);
+        long fsize = ftell(file);
+        if (fsize == 0){
+            fprintf(file, "Start\tEnd\tPax.\tFare\tDate\n");
+        }
+
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+
+        fprintf(file, "%s\t%s\t%d\t%d\t%d-%02d-%02d\n", start, end, passengers, 
+        calculate_fare(fares, fare_count, start, end, passengers), 
+        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+
+        fclose(file);
+    }
+}
+
+void main_algorithm(){
     char start[50];
+    char end[50];
+    int passengers;
+
+    printf("Please input the starting point: ");
     fgets(start, 50, stdin);
     start[strcspn(start, "\n")] = 0;
+
     printf("Please input the end point: ");
-    char end[50];
     fgets(end, 50, stdin);
     end[strcspn(end, "\n")] = 0;
+
     printf("Please input the number of passengers: ");
-    int passengers;
     scanf("%d", &passengers);
+    getchar(); //pop \n from buffer
 
     int fare = calculate_fare(fares, fare_count, start, end, passengers);
+    printf("Calculating fare...\n\n");
+    delay(1);
+    if (fare != -1){
+        printf("The fare is %d pesos.\n", fare);
+        append_to_history(start, end, passengers, fare);
+        printf("\n");
+    } else{
+        printf("Route not found\n");
+    }
+}
 
-    printf("The fare is: %d\n", fare);
-    delay(15);
+void view_history(){
+    FILE *file = fopen("history.txt", "r");
+    if (file == NULL){
+        printf("Error opening file!\n");
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)){
+        printf("%s", line);
+    }
+    printf("\n");
+    fclose(file);
+}
+
+void user_interface(){
+    int choice;
+    printf("Welcome to the UP Mindanao Tricycle Fare Calculator!\n\n");
+    savePrompt();
+    do{
+        printf("Menu: \n[1] Calculate fare\n[2] View history\n[3] Exit\nInput: ");
+        scanf("%d", &choice);
+        getchar(); //pop \n from buffer
+
+        switch(choice){
+            case 1:
+                printf("\n");
+                main_algorithm();
+                break;
+            case 2:
+                printf("\n");
+                printf("Viewing history...\n\n");
+                delay(1);
+                view_history();
+                break;
+            case 3:
+                printf("\n");
+                printf("Exiting...\n");
+                delay(1);
+                break;
+            default:
+                printf("Invalid input! Please try again.\n\n");
+        } 
+    } while (choice != 3);
+}
+
+int main(){
+    user_interface();
+    return 0;
 }
