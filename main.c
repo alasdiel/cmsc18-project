@@ -178,4 +178,5 @@ int main() {
     int fare = calculate_fare(fares, fare_count, start, end, passengers);
 
     printf("The fare is: %d\n", fare);
+    delay(15);
 }
