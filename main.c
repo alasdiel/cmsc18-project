@@ -98,6 +98,7 @@ const char* normalize_location_name(const char* location){
         strcmp(loc, "chss") == 0 ||
         strcmp(loc, "ebl") == 0 ||
         strcmp(loc, "ebl dorm") == 0 ||
+        strcmp(loc, "dorm") == 0 ||
         strcmp(loc, "kalimudan") == 0 ||
         strcmp(loc, "kali") == 0 ||
         strcmp(loc, "library") == 0 ||
