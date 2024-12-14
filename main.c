@@ -178,15 +178,4 @@ int main() {
     int fare = calculate_fare(fares, fare_count, start, end, passengers);
 
     printf("The fare is: %d\n", fare);
-
-    // int input;
-    // do {
-    //     switch(input){
-    //     case 1: {
-    //         calculate();
-    //         }
-    // }
-
-    // } while(input != 0);
-
 }
