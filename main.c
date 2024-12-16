@@ -132,6 +132,65 @@ const char* normalize_location_name(const char* location){
     return location;
 }
 
+const char* humanize_location_name(const char* location){
+    char loc[50];
+    strcpy(loc, location);
+    int i;
+
+    for (i = 0; loc[i]; i++){
+        loc[i] = tolower(loc[i]);
+    }
+    if (strcmp(loc, "admin") == 0 ||
+        strcmp(loc, "administration building") == 0 ||
+        strcmp(loc, "chss") == 0){
+        return "Admin";
+        }
+    else if (strcmp(loc, "ebl") == 0 ||
+             strcmp(loc, "ebl dorm") == 0 ||
+             strcmp(loc, "dorm") == 0){
+        return "EBL";
+        }
+    else if (strcmp(loc, "kalimudan") == 0 ||
+             strcmp(loc, "kali") == 0){
+        return "Kalimudan";
+        }
+    else if (strcmp(loc, "library") == 0 ||
+             strcmp(loc, "lib") == 0){
+        return "Library";
+        }
+    else if (strcmp(loc, "csm") == 0 ||
+             strcmp(loc, "college of science and mathematics") == 0 ||
+             strcmp(loc, "carim") == 0){
+        return "CSM";
+        }
+    else if (strcmp(loc, "sports complex") == 0 ||
+             strcmp(loc, "sports com") == 0 ||
+             strcmp(loc, "sports") == 0){
+        return "Sports Complex";
+        }
+    else if (strcmp(loc, "holy spirit community hospital") == 0 ||
+             strcmp(loc, "holy spirit") == 0){
+        return "Holy Spirit Community Hospital";
+        }
+    else if (strcmp(loc, "one big wash") == 0){
+        return "One Big Wash";
+        }
+    else if (strcmp(loc, "upad") == 0){
+        return "UPad";
+        }
+    else if (strcmp(loc, "rehab center") == 0 ||
+             strcmp(loc, "rehabilitation center") == 0){
+        return "Rehab Center";
+        }
+    else if (strcmp(loc, "bago oshiro") == 0 ||
+             strcmp(loc, "oshiro") == 0){
+        return "Bago Oshiro";
+        }
+    else if (strcmp(loc, "bureau of plant industries") == 0){
+        return "Bureau of Plant Industries";
+    }
+}
+
 int calculate_fare(Route fares[], int fare_count, const char* start, const char* end, int passengers){
     const char* normalized_start = normalize_location_name(start);
     const char* normalized_end = normalize_location_name(end);
@@ -185,15 +244,16 @@ void append_to_history(const char* start, const char* end, int passengers, int f
         fseek(file,0,SEEK_END);
         long fsize = ftell(file);
         if (fsize == 0){
-            fprintf(file, "Start\tEnd\tPax.\tFare\tDate\n");
+            fprintf(file, "%-15s%-15s%-10s%-10s%-10s\n", "Start", "End", "Pax.", "Fare", "Date");
         }
 
         time_t t = time(NULL);
         struct tm tm = *localtime(&t);
+        char date[11];
+        strftime(date, sizeof(date), "%Y-%m-%d", &tm);
 
-        fprintf(file, "%s\t%s\t%d\t%d\t%d-%02d-%02d\n", start, end, passengers, 
-        calculate_fare(fares, fare_count, start, end, passengers), 
-        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+        fprintf(file, "%-15s%-15s%-10d%-10d%-10s\n", start, end, passengers,
+        calculate_fare(fares, fare_count, start, end, passengers), date);
 
         fclose(file);
     }
@@ -221,7 +281,7 @@ void main_algorithm(){
     delay(1);
     if (fare != -1){
         printf("The fare is %d pesos.\n", fare);
-        append_to_history(start, end, passengers, fare);
+        append_to_history(humanize_location_name(start), humanize_location_name(end), passengers, fare);
         printf("\n");
     } else{
         printf("Route not found\n");
