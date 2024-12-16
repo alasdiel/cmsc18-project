@@ -228,6 +228,15 @@ int savePrompt(){
     return save_choice-1;
 }
 
+void add_ellipsis(char* dest, const char* src){
+    size_t max_len = 15;
+    if (strlen(src) > max_len){
+        snprintf(dest, max_len - 3, "%s", src);
+        strcat(dest, "... ");
+    } else{
+        snprintf(dest, max_len + 1, "%s ", src);
+    }
+}
 
 void append_to_history(const char* start, const char* end, int passengers, int fare){
     if (save_choice == 0){
@@ -252,7 +261,12 @@ void append_to_history(const char* start, const char* end, int passengers, int f
         char date[11];
         strftime(date, sizeof(date), "%Y-%m-%d", &tm);
 
-        fprintf(file, "%-15s%-15s%-10d%-10d%-10s\n", start, end, passengers,
+        char truncated_start[16];
+        char truncated_end[16];
+        add_ellipsis(truncated_start, start);
+        add_ellipsis(truncated_end, end);
+
+        fprintf(file, "%-15s%-15s%-10d%-10d%-10s\n", truncated_start, truncated_end, passengers,
         calculate_fare(fares, fare_count, start, end, passengers), date);
 
         fclose(file);
