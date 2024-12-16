@@ -40,7 +40,7 @@ Administation Building/EBL/Kalimudan/Library  25,15,15
 CSM                                           30,20,15
 Sports Complex                                35,25,20
 
-We define new routes with a struct that contains the starting point,
+We define new routes with a struct as our 'blueprint' that contains the starting point,
 end point, its base fare, and discounts for 2 or more passengers.
 */
 
@@ -75,7 +75,13 @@ Route fares[] = { // formatted as: {starting_point, end_point, base_fare, {disco
 };
 
 int fare_count = sizeof(fares) / sizeof(fares[0]);
+// The fare_count variable is used to determine the number of routes in the matrix
 
+
+/*
+adds delay for n seconds to simulate the program calculating the fare
+adds for more interactive user experience
+*/
 void delay (int seconds){ 
     clock_t start_time = clock();
     while (clock() < start_time + seconds * CLOCKS_PER_SEC);
@@ -93,7 +99,7 @@ const char* normalize_location_name(const char* location){
     for (i = 0; loc[i]; i++){
         loc[i] = tolower(loc[i]);
     }
-    if (strcmp(loc, "admin") == 0 ||
+    if (strcmp(loc, "admin") == 0 ||                    //if the input is equal to any of the following, return the normalized name
         strcmp(loc, "administration building") == 0 ||
         strcmp(loc, "chss") == 0 ||
         strcmp(loc, "ebl") == 0 ||
@@ -105,25 +111,27 @@ const char* normalize_location_name(const char* location){
         strcmp(loc, "lib") == 0){
             return "Admin/EBL/Kalimudan/Library";
     }
-    else if (strcmp(loc, "csm") == 0 || strcmp(loc, "college of science and mathematics") == 0 || strcmp(loc, "carim") == 0){
+    else if (strcmp(loc, "csm") == 0 || //if the input is equal to any of the following, return the normalized name
+             strcmp(loc, "college of science and mathematics") == 0 ||
+             strcmp(loc, "carim") == 0){
         return "CSM";
     }
-    else if (strcmp(loc, "sports complex") == 0 ||
+    else if (strcmp(loc, "sports complex") == 0 || //if the input is equal to any of the following, return the normalized name
              strcmp(loc, "sports com") == 0 ||
              strcmp(loc, "sports") == 0){
         return "Sports Complex";
         }
-    else if (strcmp(loc, "holy spirit community hospital") == 0 ||
+    else if (strcmp(loc, "holy spirit community hospital") == 0 || //if the input is equal to any of the following, return the normalized name
              strcmp(loc, "holy spirit") == 0){
         return "Holy Spirit Community Hospital";
     }
-    else if (strcmp(loc, "one big wash") == 0 ||
+    else if (strcmp(loc, "one big wash") == 0 || //if the input is equal to any of the following, return the normalized name
              strcmp(loc, "upad") == 0 ||
              strcmp(loc, "rehab center") == 0||
              strcmp(loc, "rehabilitation center") == 0){
         return "One Big Wash/UPad/Rehab Center";
     }
-    else if (strcmp(loc, "bago oshiro") == 0 ||
+    else if (strcmp(loc, "bago oshiro") == 0 || //if the input is equal to any of the following, return the normalized name
              strcmp(loc, "oshiro") == 0 ||
              strcmp(loc, "bureau of plant industries") == 0) {
         return "Bago Oshiro/Bureau of Plant Industries";
@@ -132,6 +140,7 @@ const char* normalize_location_name(const char* location){
     return location;
 }
 
+//make the location name look better for the history view
 const char* humanize_location_name(const char* location){
     char loc[50];
     strcpy(loc, location);
@@ -191,6 +200,8 @@ const char* humanize_location_name(const char* location){
     }
 }
 
+//calculate the fare given the starting point, end point, and number of passengers
+//returns the fare if the route is found, -1 if the route is not found
 int calculate_fare(Route fares[], int fare_count, const char* start, const char* end, int passengers){
     const char* normalized_start = normalize_location_name(start);
     const char* normalized_end = normalize_location_name(end);
@@ -217,6 +228,8 @@ int calculate_fare(Route fares[], int fare_count, const char* start, const char*
     return -1;
 }
 
+//prompt the user if they want to enable saving
+//returns 0 if yes, 1 if no
 int save_choice = 0;
 int savePrompt(){
     do{
@@ -228,6 +241,7 @@ int savePrompt(){
     return save_choice-1;
 }
 
+//truncates the string to 15 characters and adds ellipsis if the string is longer than 15 characters
 void add_ellipsis(char* dest, const char* src){
     size_t max_len = 15;
     if (strlen(src) > max_len){
@@ -238,6 +252,8 @@ void add_ellipsis(char* dest, const char* src){
     }
 }
 
+//appends the transaction to the history file
+//if the user chooses not to save, the function does nothing
 void append_to_history(const char* start, const char* end, int passengers, int fare){
     if (save_choice == 0){
         return;
@@ -273,6 +289,7 @@ void append_to_history(const char* start, const char* end, int passengers, int f
     }
 }
 
+//runs most of the program
 void main_algorithm(){
     char start[50];
     char end[50];
@@ -293,15 +310,16 @@ void main_algorithm(){
     int fare = calculate_fare(fares, fare_count, start, end, passengers);
     printf("Calculating fare...\n\n");
     delay(1);
-    if (fare != -1){
+    if (fare != -1){ //if the route is found
         printf("The fare is %d pesos.\n", fare);
-        append_to_history(humanize_location_name(start), humanize_location_name(end), passengers, fare);
+        append_to_history(humanize_location_name(start), humanize_location_name(end), passengers, fare); //append the transaction to the history file
         printf("\n");
     } else{
         printf("Route not found\n");
     }
 }
 
+//view the history file as a table
 void view_history(){
     FILE *file = fopen("history.txt", "r");
     if (file == NULL){
@@ -317,9 +335,12 @@ void view_history(){
     fclose(file);
 }
 
+//user interface for the program
+//allows the user to choose between calculating fare, viewing history, and exiting
 void user_interface(){
     int choice;
-    printf("Welcome to the UP Mindanao Tricycle Fare Calculator!\n\n");
+    printf("Welcome to PilaDiri!\n\n");
+    printf("PilaDiri is a tricycle fare calculator made for the \nUP Mindanao community by UP Mindanao BSCS students.\n\n");
     savePrompt();
     do{
         printf("Menu: \n[1] Calculate fare\n[2] View history\n[3] Exit\nInput: ");
@@ -348,6 +369,7 @@ void user_interface(){
     } while (choice != 3);
 }
 
+//main function
 int main(){
     user_interface();
     return 0;
