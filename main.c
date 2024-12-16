@@ -8,7 +8,7 @@ for the prices and locations.
 The program should be able to calculate the fare from the
 starting point to the end point, given a number of passengers,
 and should be able to save the transaction to a save file to be
-read later in a summary of the last 15 (tentative) transactions.
+read later in a summary of the last transactions.
 */
 #include <stdio.h>
 #include <time.h>
