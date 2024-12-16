@@ -1,5 +1,10 @@
-# cmsc18-project
+# PilaDiri
 
-UP Mindanao area tricycle fare calculator with a history system
+PilaDiri is a tricycle fare calculator specifically targeted towards the University of the Philippines Mindanao community.
+
+# Major Features:
+Fare calculation
+Expense history
+
 
 In compliance with CMSC 18
